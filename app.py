@@ -1,3 +1,4 @@
+import os
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice
 from telegram.ext import (
@@ -10,10 +11,11 @@ from telegram.ext import (
     ContextTypes,
 )
 
-TOKEN = "8967181266:AAHKu1S6hLNLWmPHbpuERnsC6QJ_Xdq5iQk"
-PROVIDER_TOKEN = "390540012:LIVE:102748"
+TOKEN = os.getenv("BOT_TOKEN")
+PROVIDER_TOKEN = os.getenv("PROVIDER_TOKEN")
 
-PDF_URL = "https://ссылка-на-пдф"
+PDF_URL = "https://drive.google.com/file/d/15eUb63cqzh_n68ezHcUNug4y2NPAeT7M/preview"
+WORKBOOK_URL = "https://drive.google.com/file/d/1FyQcLLN4cKIZtuo4GQeNz9ItipDOZ7qp/preview"
 CHANNEL_URL = "https://t.me/+CbHn5jGfCaU0MjUy"
 
 logging.basicConfig(level=logging.INFO)
@@ -91,6 +93,7 @@ async def successful_payment_callback(update: Update, context: ContextTypes.DEFA
     await update.message.reply_text(
         "✅ Оплата получена.\n\n"
         f"📘 Твой гайд: {PDF_URL}\n\n"
+        f"📝 Твоя рабочая тетрадь: {WORKBOOK_URL}\n\n"
         f"📢 Ссылка на канал: {CHANNEL_URL}\n\n"
         "Заходи в канал и закрепи его.\n"
         "Твой ритм начинается сегодня."
