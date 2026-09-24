@@ -16,7 +16,7 @@ TOKEN = os.getenv("BOT_TOKEN")
 PROVIDER_TOKEN = os.getenv("PROVIDER_TOKEN")
 
 PDF_URL = "https://drive.google.com/file/d/15eUb63cqzh_n68ezHcUNug4y2NPAeT7M/preview"
-WORKBOOK_URL = "https://drive.google.com/file/d/1FyQcLLN4cKIZtuo4GQeNz9ItipDOZ7qp/preview"
+WORKBOOK_URL = "https://drive.google.com/file/d/1hyeYWQdy1hRlJLgum9yhoP4JPdgr0TmO/preview"
 CHANNEL_URL = "https://t.me/+CbHn5jGfCaU0MjUy"
 
 # Путь к БД берём из переменной окружения (для persistent volume на BotHost).
