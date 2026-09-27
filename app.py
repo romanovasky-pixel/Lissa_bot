@@ -172,23 +172,27 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
             currency="RUB",
             prices=[LabeledPrice(label="Доступ", amount=99000)],
             start_parameter="lissa_bot",
-            receipt={
-                "customer": {
-                    "email": email
-                },
-                "items": [
-                    {
-                        "description": "Цифровой продукт Лисса.Ai",
-                        "quantity": "1.00",
-                        "amount": {
-                            "value": "990.00",
-                            "currency": "RUB"
-                        },
-                        "vat_code": 1,
-                        "payment_subject": "service",
-                        "payment_mode": "full_payment"
-                    }
-                ]
+            need_email=False,
+            send_email_to_provider=False,
+            provider_data={
+                "receipt": {
+                    "customer": {
+                        "email": email
+                    },
+                    "items": [
+                        {
+                            "description": "Цифровой продукт Лисса.Ai",
+                            "quantity": "1.00",
+                            "amount": {
+                                "value": "990.00",
+                                "currency": "RUB"
+                            },
+                            "vat_code": 1,
+                            "payment_subject": "service",
+                            "payment_mode": "full_payment"
+                        }
+                    ]
+                }
             }
         )
     except Exception as e:
