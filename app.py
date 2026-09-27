@@ -23,7 +23,7 @@ PRIVACY_URL = "https://docs.google.com/document/d/1PKhNnMkITNOav1cF5zXd7bAzLOPMB
 PERSONAL_DATA_URL = "https://docs.google.com/document/d/1qhu6-vFlOWANxC5rkegoC2AefIxC_sHfsNuLWdtWRo4/preview"
 RECLAMA_URL = "https://docs.google.com/document/d/1pFqfB3NcELt_7Upqe9bL3uiuWeKWg29VU83rC6VpIRE/preview"
 
-DB_PATH = "/tmp/payments.db"
+DB_PATH = "payments.db"
 
 logging.basicConfig(level=logging.INFO)
 
@@ -171,27 +171,7 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
             provider_token=PROVIDER_TOKEN,
             currency="RUB",
             prices=[LabeledPrice(label="Доступ", amount=100)],
-            start_parameter="lissa_bot",
-            need_email=False,
-            send_email_to_provider=False,
-            receipt={
-                "customer": {
-                    "email": email
-                },
-                "items": [
-                    {
-                        "description": "Цифровой продукт Лисса.Ai",
-                        "quantity": "1.00",
-                        "amount": {
-                            "value": "1.00",
-                            "currency": "RUB"
-                        },
-                        "vat_code": 1,
-                        "payment_subject": "service",
-                        "payment_mode": "full_payment"
-                    }
-                ]
-            }
+            start_parameter="lissa_bot"
         )
     except Exception as e:
         await update.message.reply_text("Ошибка при создании счёта. Попробуй позже.")
