@@ -23,7 +23,7 @@ PRIVACY_URL = "https://docs.google.com/document/d/1PKhNnMkITNOav1cF5zXd7bAzLOPMB
 PERSONAL_DATA_URL = "https://docs.google.com/document/d/1qhu6-vFlOWANxC5rkegoC2AefIxC_sHfsNuLWdtWRo4/preview"
 RECLAMA_URL = "https://docs.google.com/document/d/1pFqfB3NcELt_7Upqe9bL3uiuWeKWg29VU83rC6VpIRE/preview"
 
-DB_PATH = os.getenv("DATABASE_PATH", "payments.db")
+DB_PATH = "/tmp/payments.db"
 
 logging.basicConfig(level=logging.INFO)
 
