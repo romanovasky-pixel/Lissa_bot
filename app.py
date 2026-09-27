@@ -31,7 +31,7 @@ user_emails = {}
 
 menu = InlineKeyboardMarkup([
     [InlineKeyboardButton("🛒 Что входит", callback_data="product")],
-    [InlineKeyboardButton("💳 Оплатить 100 ₽", callback_data="pay")]
+    [InlineKeyboardButton("💳 Оплатить 990 ₽", callback_data="pay")]
 ])
 
 back = InlineKeyboardMarkup([
@@ -98,10 +98,10 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "— Гайд «От глобального к локальному» (PDF)\n"
             "— Рабочая тетрадь на 30 дней (PDF)\n"
             "— Закрытый канал с ежедневной мотивацией\n\n"
-            "Цена: 100 ₽ (тест)\n\n"
+            "Цена: 990 ₽ (разово)\n\n"
             "Нажми «Оплатить», чтобы получить доступ.",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("💳 Оплатить 100 ₽", callback_data="pay")],
+                [InlineKeyboardButton("💳 Оплатить 990 ₽", callback_data="pay")],
                 [InlineKeyboardButton("⬅️ Назад", callback_data="back")]
             ])
         )
@@ -170,10 +170,8 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
             payload="lissa_evolution_payment",
             provider_token=PROVIDER_TOKEN,
             currency="RUB",
-            prices=[LabeledPrice(label="Доступ", amount=10000)],
+            prices=[LabeledPrice(label="Доступ", amount=99000)],
             start_parameter="lissa_bot",
-            need_email=False,
-            send_email_to_provider=False,
             receipt={
                 "customer": {
                     "email": email
@@ -183,7 +181,7 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         "description": "Цифровой продукт Лисса.Ai",
                         "quantity": "1.00",
                         "amount": {
-                            "value": "100.00",
+                            "value": "990.00",
                             "currency": "RUB"
                         },
                         "vat_code": 1,
