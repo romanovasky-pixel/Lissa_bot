@@ -19,8 +19,10 @@ PDF_URL = "https://drive.google.com/file/d/15eUb63cqzh_n68ezHcUNug4y2NPAeT7M/pre
 WORKBOOK_URL = "https://drive.google.com/file/d/1hyeYWQdy1hRlJLgum9yhoP4JPdgr0TmO/preview"
 CHANNEL_URL = "https://t.me/+CbHn5jGfCaU0MjUy"
 
-# Путь к БД берём из переменной окружения (для persistent volume на BotHost).
-# Если переменная не задана — используем локальный файл рядом со скриптом.
+PRIVACY_URL = "https://docs.google.com/document/d/1PKhNnMkITNOav1cF5zXd7bAzLOPMBCDdrxuy8oJvRrM/preview"
+PERSONAL_DATA_URL = "https://docs.google.com/document/d/1qhu6-vFlOWANxC5rkegoC2AefIxC_sHfsNuLWdtWRo4/preview"
+RECLAMA_URL = "https://docs.google.com/document/d/1pFqfB3NcELt_7Upqe9bL3uiuWeKWg29VU83rC6VpIRE/preview"
+
 DB_PATH = os.getenv("DATABASE_PATH", "payments.db")
 
 logging.basicConfig(level=logging.INFO)
@@ -29,7 +31,7 @@ user_emails = {}
 
 menu = InlineKeyboardMarkup([
     [InlineKeyboardButton("🛒 Что входит", callback_data="product")],
-    [InlineKeyboardButton("💳 Оплатить 990 ₽", callback_data="pay")]
+    [InlineKeyboardButton("💳 Оплатить 1 ₽", callback_data="pay")]
 ])
 
 back = InlineKeyboardMarkup([
@@ -40,7 +42,6 @@ back = InlineKeyboardMarkup([
 # ---------- Работа с БД ----------
 
 def init_db():
-    """Создаёт таблицу для платежей при старте бота."""
     conn = sqlite3.connect(DB_PATH, timeout=30)
     cur = conn.cursor()
     cur.execute("""
@@ -57,11 +58,6 @@ def init_db():
 
 
 def mark_payment_processed(charge_id: str, user_id: int, email: str = "") -> bool:
-    """
-    Пытается записать платёж в БД.
-    True — новый платёж (обработать).
-    False — дубликат (пропустить).
-    """
     conn = sqlite3.connect(DB_PATH, timeout=30)
     cur = conn.cursor()
     try:
@@ -102,10 +98,10 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "— Гайд «От глобального к локальному» (PDF)\n"
             "— Рабочая тетрадь на 30 дней (PDF)\n"
             "— Закрытый канал с ежедневной мотивацией\n\n"
-            "Цена: 990 ₽ (разово)\n\n"
+            "Цена: 1 ₽ (тест)\n\n"
             "Нажми «Оплатить», чтобы получить доступ.",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("💳 Оплатить 990 ₽", callback_data="pay")],
+                [InlineKeyboardButton("💳 Оплатить 1 ₽", callback_data="pay")],
                 [InlineKeyboardButton("⬅️ Назад", callback_data="back")]
             ])
         )
@@ -120,7 +116,25 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if data == "pay":
         await query.edit_message_text(
-            "📧 Перед оплатой укажи свой email для получения чека.\n\n"
+            "📋 Перед оплатой подтверди, пожалуйста:\n\n"
+            "1️⃣ Я ознакомлен(а) и согласен(на) с Политикой в отношении обработки персональных данных\n\n"
+            "2️⃣ Я даю согласие на обработку персональных данных\n\n"
+            "3️⃣ Я согласен(на) на получение информационных и рекламных сообщений\n\n"
+            "Нажимая «Подтверждаю», ты соглашаешься со всеми тремя пунктами.",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("📄 Политика", url=PRIVACY_URL)],
+                [InlineKeyboardButton("📄 Согласие на обработку", url=PERSONAL_DATA_URL)],
+                [InlineKeyboardButton("📄 Рекламная рассылка", url=RECLAMA_URL)],
+                [InlineKeyboardButton("✅ Подтверждаю", callback_data="confirm")],
+                [InlineKeyboardButton("❌ Отмена", callback_data="back")]
+            ])
+        )
+        return
+
+    if data == "confirm":
+        context.user_data["agreed"] = True
+        await query.edit_message_text(
+            "📧 Теперь укажи свой email для получения чека.\n\n"
             "Напиши его в чат:"
         )
         context.user_data["awaiting_email"] = True
@@ -128,7 +142,6 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка введённого email"""
     user_id = update.effective_user.id
     email = update.message.text.strip()
 
@@ -157,7 +170,7 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
             payload="lissa_evolution_payment",
             provider_token=PROVIDER_TOKEN,
             currency="RUB",
-            prices=[LabeledPrice(label="Доступ", amount=99000)],
+            prices=[LabeledPrice(label="Доступ", amount=100)],
             start_parameter="lissa_bot",
             need_email=False,
             send_email_to_provider=False,
@@ -170,7 +183,7 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         "description": "Цифровой продукт Лисса.Ai",
                         "quantity": "1.00",
                         "amount": {
-                            "value": "990.00",
+                            "value": "1.00",
                             "currency": "RUB"
                         },
                         "vat_code": 1,
@@ -191,18 +204,16 @@ async def precheckout_callback(update: Update, context: ContextTypes.DEFAULT_TYP
 
 
 async def successful_payment_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка успешного платежа с защитой от дублей через SQLite."""
     payment = update.message.successful_payment
     charge_id = payment.telegram_payment_charge_id
     user_id = update.effective_user.id
     email = user_emails.get(user_id, "")
 
-    # Пытаемся записать платёж в БД
     try:
         is_new = mark_payment_processed(charge_id, user_id, email)
     except Exception as e:
         logging.error(f"Ошибка БД при обработке платежа: {e}")
-        is_new = True  # на всякий случай выдаём материал
+        is_new = True
 
     if not is_new:
         logging.info(f"Дубликат платежа charge_id={charge_id}, пропускаем")
