@@ -31,7 +31,7 @@ user_emails = {}
 
 menu = InlineKeyboardMarkup([
     [InlineKeyboardButton("🛒 Что входит", callback_data="product")],
-    [InlineKeyboardButton("💳 Оплатить 1 ₽", callback_data="pay")]
+    [InlineKeyboardButton("💳 Оплатить 50 ₽", callback_data="pay")]
 ])
 
 back = InlineKeyboardMarkup([
@@ -98,10 +98,10 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "— Гайд «От глобального к локальному» (PDF)\n"
             "— Рабочая тетрадь на 30 дней (PDF)\n"
             "— Закрытый канал с ежедневной мотивацией\n\n"
-            "Цена: 1 ₽ (тест)\n\n"
+            "Цена: 50 ₽ (тест)\n\n"
             "Нажми «Оплатить», чтобы получить доступ.",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("💳 Оплатить 1 ₽", callback_data="pay")],
+                [InlineKeyboardButton("💳 Оплатить 50 ₽", callback_data="pay")],
                 [InlineKeyboardButton("⬅️ Назад", callback_data="back")]
             ])
         )
@@ -170,8 +170,25 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
             payload="lissa_evolution_payment",
             provider_token=PROVIDER_TOKEN,
             currency="RUB",
-            prices=[LabeledPrice(label="Доступ", amount=100)],
-            start_parameter="lissa_bot"
+            prices=[LabeledPrice(label="Доступ", amount=5000)],
+            start_parameter="lissa_bot",
+            need_email=False,
+            send_email_to_provider=False,
+            provider_data={
+                "receipt": {
+                    "items": [
+                        {
+                            "description": "Цифровой продукт Лисса.Ai",
+                            "quantity": "1.00",
+                            "amount": {
+                                "value": "50.00",
+                                "currency": "RUB"
+                            },
+                            "vat_code": 1
+                        }
+                    ]
+                }
+            }
         )
     except Exception as e:
         await update.message.reply_text("Ошибка при создании счёта. Попробуй позже.")
